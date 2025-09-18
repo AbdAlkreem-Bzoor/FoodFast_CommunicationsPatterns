@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  foodfast.api:
+    container_name: foodfast.api
+    build:
+      context: .                # root (where Dockerfile is)
+      dockerfile: FoodFast.API/Dockerfile
+    ports:
+      - "5125:8080"   # match launchSettings.json http
+      - "7106:8081"   # match launchSettings.json https
+    depends_on:
+      - sqlserver
+      - redis
+      - rabbitmq
+    environment:
+      ConnectionStrings__SqlServer: "Server=sqlserver;Database=FoodFast;User=sa;Password=Your_password123;TrustServerCertificate=True"
+      Redis__Host: "redis"
+      Redis__Port: "6379"
+      RabbitMq__RabbitMqSetting__HostName: "rabbitmq"
+      RabbitMq__RabbitMqSetting__UserName: "guest"
+      RabbitMq__RabbitMqSetting__Password: "guest"
+      RabbitMq__RabbitMqSetting__ConnectionString: "amqp://guest:guest@rabbitmq:5672"
+      ASPNETCORE_ENVIRONMENT: "Development"
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+  redis:
+    container_name: redis
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

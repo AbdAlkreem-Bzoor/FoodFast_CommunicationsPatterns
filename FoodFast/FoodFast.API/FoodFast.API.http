@@ -1,0 +1,6 @@
+@FoodFast.API_HostAddress = http://localhost:5125
+
+GET {{FoodFast.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
